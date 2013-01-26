@@ -96,7 +96,7 @@ bool get_file_for_path(const QString &path, File &file)
 void add_file(const File &file)
 {
     std::cout<<"New file to interesting files list, path="
-             <<qstr2cchar(file.path())<<std::endl;
+             <<qstring2c_str(file.path())<<std::endl;
     g_files[file.path()] = file;
 }
 

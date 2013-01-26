@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Files &amp; tags</string>
+   <string>sftags</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>

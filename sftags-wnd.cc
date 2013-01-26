@@ -21,16 +21,19 @@ FilesAndTagsWnd::FilesAndTagsWnd( QWidget *, char *)
 {
     setupUi(this);
 
+    QString start_path = QDir::home().path();
+    //QString start_path = "/"; // testing
     mp_model = new QFileSystemModel;
-    mp_model->setRootPath(QDir::home().path());
+    mp_model->setRootPath(start_path);
     treeView->setModel(mp_model);
-    treeView->setRootIndex(mp_model->index(QDir::home().path()));
+    treeView->setRootIndex(mp_model->index(start_path));
     treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     mp_tags_button->setEnabled(false);
     treeView->hideColumn(3);
     treeView->hideColumn(2);
     treeView->hideColumn(1);
     treeView->setIconSize(QSize(24, 24));
+    treeView->setAlternatingRowColors(true);
     setup_slots();
 }
 
@@ -51,7 +54,7 @@ void FilesAndTagsWnd::selection_changed(const QModelIndex & current, const QMode
         mp_tags_button->setEnabled(true);
         // get full real path
         QString full_path = mp_model->filePath(current);
-        char *p_real_path = realpath(qstr2cchar(full_path), NULL);
+        char *p_real_path = realpath(qstring2c_str(full_path), NULL);
         m_current_path = QString::fromUtf8(p_real_path);
         free(p_real_path);
         int slash_pos = full_path.lastIndexOf('/');
@@ -90,7 +93,7 @@ void FilesAndTagsWnd::change_tags()
         set<QString>::const_iterator it;
         cout<<"File tags: ";
         for (it = new_tags.begin(); it != new_tags.end(); it++) {
-            cout<<qstr2cchar(*it);
+            cout<<qstring2c_str(*it);
         }
         cout<<endl;
         
@@ -100,6 +103,13 @@ void FilesAndTagsWnd::change_tags()
             file_details.set_tags(new_tags);
             add_file(file_details);
         }
+
+        // save changes
+        if (!save_xml()) {
+            QMessageBox::critical(NULL, "Error", "Error saving XML document");
+            // :fixme: do something (revert?)
+        }
+
         display_tags(file_details);
     }
 }

@@ -69,7 +69,7 @@ void TagsBox::layout(const set<QString> &all_tags)
     mpLabels=new QTreeWidget();
     mpLabels->setColumnCount(1);
     mpLabels->setAlternatingRowColors(true);
-    mpLabels->setHeaderLabels(QStringList("Available labels"));
+    mpLabels->setHeaderLabels(QStringList("Available tags"));
     set<QString>::const_iterator it;
     for (it = all_tags.begin(); it != all_tags.end(); it++) {
         addLabelInList(*it, (m_selected_tags.find(*it) != m_selected_tags.end()));
@@ -83,7 +83,7 @@ void TagsBox::layout(const set<QString> &all_tags)
     if (mAddEnabled) {
         QGroupBox *p_grp = new QGroupBox("New tag");
         mpLabelEdit=new QLineEdit();
-        mpAddNewButton=new QPushButton("Add new label");
+        mpAddNewButton=new QPushButton("Add new tag");
         QHBoxLayout *p_h_layout = new QHBoxLayout;
         p_h_layout->addWidget(mpLabelEdit);
         p_h_layout->addWidget(mpAddNewButton);

@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <iostream>
 #include <vector>
 
@@ -13,21 +15,22 @@
 using namespace Ui;
 using std::vector;
 
-#define XML_PATH "sftags.xml"
+#define XML_FNAME ".sftags.xml"
 
 QApplication *g_app = NULL;
+QSettings g_settings("clapautius", "sftags");
+QString g_xml_path; // :fixme: to be removed - put this in g_settings
 
-QSettings gSettings("clapautius", "sftags");
 
-const char* qstr2cchar(const QString &str)
+const char* qstring2c_str(const QString &str)
 {
     return str.toUtf8().constData();
 }
 
 
-bool read_xml(const char *path, QDomDocument &doc)
+bool read_xml(QDomDocument &doc)
 {
-    QFile file(path);
+    QFile file(g_xml_path);
     if (!file.open(QIODevice::ReadOnly))
         return false;
     if (!doc.setContent(&file)) {
@@ -79,14 +82,49 @@ bool parse_xml(QDomDocument &doc)
 
 
 
-bool save_xml(const char *path)
+/**
+ * Helper function used by save_xml().
+ * Rename the current xml file to <orig_name>.xxx.
+ * @return true if ok, false on error.
+ **/
+static bool create_backup(QString path)
 {
-    QFile file(path);
+    char suffix[4] = {0};
+    for (int i = 0; i < 999; i++) {
+        snprintf(suffix, 4, "%03d", i);
+        QString backup_path = path + "." + suffix;
+        if (!QFile::exists(backup_path)) {
+            if (rename(qstring2c_str(path), qstring2c_str(backup_path)) == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    // too many backup
+    return false;
+}
+
+
+/**
+ * Save the current files and tags to the XML config file.
+ *
+ * @return true if OK, false on error.
+ * @todo create a backup first. :fixme:
+ **/
+bool save_xml()
+{
+    // create backup
+    if (!create_backup(g_xml_path)) {
+        QMessageBox::information(NULL, "Warning", "Cannot create backup XML file");
+    }
+    
+    QFile file(g_xml_path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         return false;
     }
     QString xml_string = get_xml_dump();
-    if (file.write(qstr2cchar(xml_string)) < 0) {
+    if (file.write(qstring2c_str(xml_string)) < 0) {
         file.close();
         return false;
     }
@@ -99,13 +137,20 @@ int main( int argc, char **argv )
 {
     g_app=new QApplication( argc, argv );
     QDomDocument xml_doc;
-    if (read_xml(XML_PATH, xml_doc)) {
+
+    // check if xml file exists (first time run)
+    g_xml_path = QDir::home().path() + "/" + XML_FNAME;
+    QFile xml_file(g_xml_path);
+    if (!xml_file.exists()) {
+        // first run
+        QMessageBox::information(NULL, "Info", "First run - creating config. files");
+        save_xml();
+    }
+
+    if (read_xml(xml_doc)) {
         if (parse_xml(xml_doc)) {
             FilesAndTagsWnd *w = new FilesAndTagsWnd();
             w->exec();
-            if (!save_xml(XML_PATH)) {
-                QMessageBox::critical(NULL, "Error", "Error saving XML document");
-            }
             return 0;
         } else {
             QMessageBox::critical(NULL, "Error", "Error parsing XML document");

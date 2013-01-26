@@ -6,10 +6,13 @@
 
 #define FILES_TAGS_VER "0.1" // :release:
 
-const char* qstr2cchar(const QString &str);
+const char* qstring2c_str(const QString &str);
 
 extern QApplication *g_app;
 
-//bool contains(std::vector<QString> vect, QString elt);
+/**
+ * @brief Save the current files and tags to the XML config file.
+ **/
+bool save_xml();
 
 #endif
