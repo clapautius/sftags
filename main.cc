@@ -12,6 +12,12 @@
 #include "sftags-wnd.h"
 #include "file.h"
 
+#ifdef SFTAGS_DEBUG
+  #include <iostream>
+  using std::cout;
+  using std::endl;
+#endif
+
 using namespace Ui;
 using std::vector;
 
@@ -19,6 +25,7 @@ using std::vector;
 
 QApplication *g_app = NULL;
 QSettings g_settings("clapautius", "sftags");
+FilesAndTagsWnd *gp_main_wnd = NULL;
 QString g_xml_path; // :fixme: to be removed - put this in g_settings
 
 
@@ -94,6 +101,9 @@ static bool create_backup(QString path)
         snprintf(suffix, 4, "%03d", i);
         QString backup_path = path + "." + suffix;
         if (!QFile::exists(backup_path)) {
+#ifdef SFTAGS_DEBUG
+            cout<<":debug: creating backup file "<<qstring2c_str(backup_path)<<endl;
+#endif
             if (rename(qstring2c_str(path), qstring2c_str(backup_path)) == 0) {
                 return true;
             } else {
@@ -112,11 +122,13 @@ static bool create_backup(QString path)
  * @return true if OK, false on error.
  * @todo create a backup first. :fixme:
  **/
-bool save_xml()
+bool save_xml(bool first_time)
 {
     // create backup
-    if (!create_backup(g_xml_path)) {
-        QMessageBox::information(NULL, "Warning", "Cannot create backup XML file");
+    if (!first_time) {
+        if (!create_backup(g_xml_path)) {
+            QMessageBox::information(NULL, "Warning", "Cannot create backup XML file");
+        }
     }
     
     QFile file(g_xml_path);
@@ -144,13 +156,13 @@ int main( int argc, char **argv )
     if (!xml_file.exists()) {
         // first run
         QMessageBox::information(NULL, "Info", "First run - creating config. files");
-        save_xml();
+        save_xml(true);
     }
 
     if (read_xml(xml_doc)) {
         if (parse_xml(xml_doc)) {
-            FilesAndTagsWnd *w = new FilesAndTagsWnd();
-            w->exec();
+            gp_main_wnd = new FilesAndTagsWnd();
+            gp_main_wnd->exec();
             return 0;
         } else {
             QMessageBox::critical(NULL, "Error", "Error parsing XML document");

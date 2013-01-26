@@ -4,6 +4,15 @@
 
 #include "file.h"
 #include "main.h"
+#include "sftags-wnd.h"
+
+#ifdef SFTAGS_DEBUG
+  #include <iostream>
+  using std::cout;
+  using std::endl;
+#endif
+
+extern FilesAndTagsWnd *gp_main_wnd;
 
 using std::set;
 
@@ -115,7 +124,17 @@ const std::set<QString>& get_all_used_tags()
 
 void add_used_tag(const QString &new_tag)
 {
-    g_tags.insert(new_tag);
+    if (g_tags.find(new_tag) == g_tags.end()) {
+        g_tags.insert(new_tag);
+        if (gp_main_wnd) {
+            gp_main_wnd->add_used_tag(new_tag);
+        }
+    }
+#ifdef SFTAGS_DEBUG
+    else {
+        cout<<"Tag "<<qstring2c_str(new_tag)<<" already exists in the tags list"<<endl;
+    }
+#endif
 }
 
 

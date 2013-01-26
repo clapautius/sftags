@@ -4,7 +4,9 @@
 #include <QApplication>
 #include <QString>
 
-#define FILES_TAGS_VER "0.1" // :release:
+#define SFTAGS_VER "0.1" // :release:
+
+#define SFTAGS_DEBUG
 
 const char* qstring2c_str(const QString &str);
 
@@ -13,6 +15,6 @@ extern QApplication *g_app;
 /**
  * @brief Save the current files and tags to the XML config file.
  **/
-bool save_xml();
+bool save_xml(bool first_time = false);
 
 #endif

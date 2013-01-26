@@ -1,20 +1,25 @@
 #include <stdlib.h>
 #include <vector>
-#include <iostream>
+
 
 #include <QString>
 #include <QMessageBox>
 #include <QFileSystemModel>
 #include <QDir>
+#include <QListWidget>
 
 #include "sftags-wnd.h"
 #include "main.h"
 #include "tagsbox.h"
 #include "file.h"
 
+#ifdef SFTAGS_DEBUG
+  #include <iostream>
+  using std::cout;
+  using std::endl;
+#endif
+
 using std::set;
-using std::cout;
-using std::endl;
 
 
 FilesAndTagsWnd::FilesAndTagsWnd( QWidget *, char *)
@@ -35,6 +40,13 @@ FilesAndTagsWnd::FilesAndTagsWnd( QWidget *, char *)
     treeView->setIconSize(QSize(24, 24));
     treeView->setAlternatingRowColors(true);
     setup_slots();
+
+    // add used tags to tags list in search tab
+    const set<QString> &current_used_tags = get_all_used_tags();
+    set<QString>::const_iterator it;
+    for (it = current_used_tags.begin(); it != current_used_tags.end(); it++) {
+        this->add_used_tag(*it);
+    }    
 }
 
 
@@ -91,11 +103,13 @@ void FilesAndTagsWnd::change_tags()
         set<QString> new_tags = p_tags_box->get_selected_tags();
         // print tags
         set<QString>::const_iterator it;
+#ifdef SFTAGS_DEBUG
         cout<<"File tags: ";
         for (it = new_tags.begin(); it != new_tags.end(); it++) {
-            cout<<qstring2c_str(*it);
+            cout<<qstring2c_str(*it)<<" ";
         }
         cout<<endl;
+#endif
         
         if (new_tags.empty()) {
             erase_file(file_details);
@@ -125,3 +139,10 @@ void FilesAndTagsWnd::display_tags(const File &file_details)
     }
     mp_tags_label->setText(tags_str);
 }
+
+
+void FilesAndTagsWnd::add_used_tag(const QString &tag)
+{
+    mp_tags_list->addItem(tag);
+}
+

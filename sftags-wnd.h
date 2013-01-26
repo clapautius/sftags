@@ -1,7 +1,6 @@
 #ifndef FILES_AND_TAGS_WND_H
 #define FILES_AND_TAGS_WND_H
 
-#include <string>
 #include <QFileSystemModel>
 
 #include "ui_sftags.h"
@@ -14,6 +13,8 @@ class FilesAndTagsWnd : public QDialog, public Ui::Dialog
 public:
 
   FilesAndTagsWnd( QWidget *parent = 0, char *name = 0 );
+
+  void add_used_tag(const QString &tag);
 
 protected slots:
   
