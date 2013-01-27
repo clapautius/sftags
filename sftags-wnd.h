@@ -22,6 +22,8 @@ protected slots:
 
   void change_tags();
 
+  void tree_item_clicked(const QModelIndex &idx);
+
 private:
 
   void setup_slots();

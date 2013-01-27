@@ -79,14 +79,23 @@
           <widget class="QLabel" name="mp_tags_label">
            <property name="geometry">
             <rect>
-             <x>9</x>
+             <x>10</x>
              <y>260</y>
-             <width>281</width>
+             <width>271</width>
              <height>131</height>
             </rect>
            </property>
+           <property name="styleSheet">
+            <string notr="true">border-top: 1px solid black;</string>
+           </property>
            <property name="text">
             <string/>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::RichText</enum>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
            </property>
           </widget>
           <widget class="QCommandLinkButton" name="mp_tags_button">
@@ -189,6 +198,26 @@
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="mp_pref_button">
+          <property name="text">
+           <string>Preferences</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>

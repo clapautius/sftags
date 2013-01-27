@@ -21,6 +21,8 @@
 
 using std::set;
 
+#define NO_TAGS_TEXT "<span style=\"font-weight: bold;\">No tags.</span>"
+#define TAGS_TEXT "<span style=\"font-weight: bold;\">Tags: </span>"
 
 FilesAndTagsWnd::FilesAndTagsWnd( QWidget *, char *)
 {
@@ -40,6 +42,10 @@ FilesAndTagsWnd::FilesAndTagsWnd( QWidget *, char *)
     treeView->setIconSize(QSize(24, 24));
     treeView->setAlternatingRowColors(true);
     setup_slots();
+
+    // expand on single click
+    connect(treeView, SIGNAL(clicked(const QModelIndex &)),
+            this, SLOT(tree_item_clicked(const QModelIndex&)));
 
     // add used tags to tags list in search tab
     const set<QString> &current_used_tags = get_all_used_tags();
@@ -80,7 +86,7 @@ void FilesAndTagsWnd::selection_changed(const QModelIndex & current, const QMode
         if (get_file_for_path(m_current_path, file_details)) {
             display_tags(file_details);
         } else {
-            mp_tags_label->setText("No tags.");
+            mp_tags_label->setText(NO_TAGS_TEXT);
         }
     } else {
         mp_fname_label->setText("");
@@ -138,9 +144,9 @@ void FilesAndTagsWnd::display_tags(const File &file_details)
         tags_str += *it + " ";
     }
     if (tags_str.isEmpty()) {
-        mp_tags_label->setText("No tags.");
+        mp_tags_label->setText(NO_TAGS_TEXT);
     } else {
-        mp_tags_label->setText(QString("Tags: ") + tags_str);
+        mp_tags_label->setText(QString(TAGS_TEXT) + tags_str);
     }
 }
 
@@ -148,5 +154,16 @@ void FilesAndTagsWnd::display_tags(const File &file_details)
 void FilesAndTagsWnd::add_used_tag(const QString &tag)
 {
     mp_tags_list->addItem(tag);
+}
+
+
+
+void FilesAndTagsWnd::tree_item_clicked(const QModelIndex &idx)
+{
+    if (treeView->isExpanded(idx)) {
+        treeView->collapse(idx);
+    } else {
+        treeView->expand(idx);
+    }
 }
 
