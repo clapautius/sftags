@@ -80,7 +80,7 @@ void FilesAndTagsWnd::selection_changed(const QModelIndex & current, const QMode
         if (get_file_for_path(m_current_path, file_details)) {
             display_tags(file_details);
         } else {
-            mp_tags_label->setText("");
+            mp_tags_label->setText("No tags.");
         }
     } else {
         mp_fname_label->setText("");
@@ -137,7 +137,11 @@ void FilesAndTagsWnd::display_tags(const File &file_details)
     for (it = tags.begin(); it != tags.end(); it++) {
         tags_str += *it + " ";
     }
-    mp_tags_label->setText(tags_str);
+    if (tags_str.isEmpty()) {
+        mp_tags_label->setText("No tags.");
+    } else {
+        mp_tags_label->setText(QString("Tags: ") + tags_str);
+    }
 }
 
 
