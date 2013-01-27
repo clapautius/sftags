@@ -66,7 +66,7 @@ void FilesAndTagsWnd::selection_changed(const QModelIndex & current, const QMode
         mp_tags_button->setEnabled(true);
         // get full real path
         QString full_path = mp_model->filePath(current);
-        char *p_real_path = realpath(qstring2c_str(full_path), NULL);
+        char *p_real_path = realpath(Q_STR(full_path), NULL);
         m_current_path = QString::fromUtf8(p_real_path);
         free(p_real_path);
         int slash_pos = full_path.lastIndexOf('/');
@@ -106,7 +106,7 @@ void FilesAndTagsWnd::change_tags()
 #ifdef SFTAGS_DEBUG
         cout<<"File tags: ";
         for (it = new_tags.begin(); it != new_tags.end(); it++) {
-            cout<<qstring2c_str(*it)<<" ";
+            cout<<Q_STR(*it)<<" ";
         }
         cout<<endl;
 #endif

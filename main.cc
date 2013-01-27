@@ -29,12 +29,6 @@ FilesAndTagsWnd *gp_main_wnd = NULL;
 QString g_xml_path; // :fixme: to be removed - put this in g_settings
 
 
-const char* qstring2c_str(const QString &str)
-{
-    return str.toUtf8().constData();
-}
-
-
 bool read_xml(QDomDocument &doc)
 {
     QFile file(g_xml_path);
@@ -102,9 +96,9 @@ static bool create_backup(QString path)
         QString backup_path = path + "." + suffix;
         if (!QFile::exists(backup_path)) {
 #ifdef SFTAGS_DEBUG
-            cout<<":debug: creating backup file "<<qstring2c_str(backup_path)<<endl;
+            cout<<":debug: creating backup file "<<Q_STR(backup_path)<<endl;
 #endif
-            if (rename(qstring2c_str(path), qstring2c_str(backup_path)) == 0) {
+            if (rename(Q_STR(path), Q_STR(backup_path)) == 0) {
                 return true;
             } else {
                 return false;
@@ -136,7 +130,11 @@ bool save_xml(bool first_time)
         return false;
     }
     QString xml_string = get_xml_dump();
-    if (file.write(qstring2c_str(xml_string)) < 0) {
+    if (file.write(Q_STR(xml_string)) != xml_string.size()) {
+#ifdef SFTAGS_DEBUG
+        cout<<"Error writing data to xml file"<<endl;
+        cout<<"xml_string="<<Q_STR(xml_string)<<endl;
+#endif
         file.close();
         return false;
     }

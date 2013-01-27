@@ -8,7 +8,7 @@
 
 #define SFTAGS_DEBUG
 
-const char* qstring2c_str(const QString &str);
+#define Q_STR(x) (x).toUtf8().constData()
 
 extern QApplication *g_app;
 

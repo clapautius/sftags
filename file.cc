@@ -105,7 +105,7 @@ bool get_file_for_path(const QString &path, File &file)
 void add_file(const File &file)
 {
     std::cout<<"New file to interesting files list, path="
-             <<qstring2c_str(file.path())<<std::endl;
+             <<Q_STR(file.path())<<std::endl;
     g_files[file.path()] = file;
 }
 
@@ -132,7 +132,7 @@ void add_used_tag(const QString &new_tag)
     }
 #ifdef SFTAGS_DEBUG
     else {
-        cout<<"Tag "<<qstring2c_str(new_tag)<<" already exists in the tags list"<<endl;
+        cout<<"Tag "<<Q_STR(new_tag)<<" already exists in the tags list"<<endl;
     }
 #endif
 }
