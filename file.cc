@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include <QtXml>
 
@@ -15,6 +16,7 @@
 extern FilesAndTagsWnd *gp_main_wnd;
 
 using std::set;
+using std::vector;
 
 std::map<QString, File> g_files;
 
@@ -65,6 +67,16 @@ void File::set_tags(const set<QString> &new_tags)
 void File::add_tag(const QString &new_tag)
 {
     m_tags.insert(new_tag);
+}
+
+
+bool File::has_tag(const QString &tag) const
+{
+    if (m_tags.find(tag) == m_tags.end()) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 
@@ -152,4 +164,21 @@ QString get_xml_dump()
         it->second.add_file_to_xml_dom(doc);
     }
     return doc.toString();
+}
+
+
+/**
+ * @param[in] p_predicate : poor man's lambda expression ;)
+ **/
+vector<QString> filter_files(bool (*p_predicate)(const File &, void *),
+                             void *p_data)
+{
+    vector<QString> result;
+    std::map<QString, File>::const_iterator it = g_files.begin();
+    for (; it != g_files.end(); it++) {
+        if (p_predicate(it->second, p_data)) {
+            result.push_back(it->first);
+        }
+    }
+    return result;
 }

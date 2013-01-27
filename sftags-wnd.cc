@@ -7,6 +7,8 @@
 #include <QFileSystemModel>
 #include <QDir>
 #include <QListWidget>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "sftags-wnd.h"
 #include "main.h"
@@ -20,6 +22,7 @@
 #endif
 
 using std::set;
+using std::vector;
 
 #define NO_TAGS_TEXT "<span style=\"font-weight: bold;\">No tags.</span>"
 #define TAGS_TEXT "<span style=\"font-weight: bold;\">Tags: </span>"
@@ -63,6 +66,9 @@ void FilesAndTagsWnd::setup_slots()
             this, SLOT(selection_changed(const QModelIndex&, const QModelIndex&)));
     connect(mp_tags_button, SIGNAL(clicked()), this, SLOT(change_tags()));
     connect(mp_close_button, SIGNAL(clicked()), this, SLOT(close()));
+    connect(mp_search, SIGNAL(clicked()), this, SLOT(search()));
+    connect(mp_results_list, SIGNAL(itemClicked(QListWidgetItem*)),
+            this, SLOT(result_clicked(QListWidgetItem*)));
 }
 
 
@@ -167,3 +173,75 @@ void FilesAndTagsWnd::tree_item_clicked(const QModelIndex &idx)
     }
 }
 
+
+/**
+ * Pseudo lamba expression.
+ * Predicate that returns true if the file has any of the tags.
+ * @param[in] p_data : a pointer to a QList<QListWidgetItem*>.
+ **/
+static bool contains_any_tag(const File &file, void *p_data)
+{
+    QList<QListWidgetItem*> *p_tags = static_cast<QList<QListWidgetItem*>*>(p_data);
+    if (p_tags) {
+        for (int i = 0; i < p_tags->size(); i++) {
+            if (file.has_tag((*p_tags)[i]->text())) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+/**
+ * Pseudo lamba expression.
+ * Predicate that returns true if the file has all the tags.
+ * @param[in] p_data : a pointer to a QList<QListWidgetItem*>.
+ **/
+static bool contains_all_tags(const File &file, void *p_data)
+{
+    QList<QListWidgetItem*> *p_tags = static_cast<QList<QListWidgetItem*>*>(p_data);
+    if (p_tags) {
+        bool has_all = true;
+        for (int i = 0; i < p_tags->size(); i++) {
+            if (!file.has_tag((*p_tags)[i]->text())) {
+                has_all = false;
+                break;
+            }
+        }
+        if (has_all) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    return false;
+}
+
+
+void FilesAndTagsWnd::search()
+{
+    QList<QListWidgetItem*> selected = mp_tags_list->selectedItems();
+    if (selected.size() <= 0) {
+        QMessageBox::information(this, "Error", "Nothing selected");
+    } else {
+        mp_results_list->clear();
+        vector<QString> result;
+        if (mp_any_button->isChecked()) {
+            result = filter_files(contains_any_tag, &selected);
+        } else {
+            result = filter_files(contains_all_tags, &selected);
+        }
+        for (unsigned int i = 0; i < result.size(); i++) {
+            mp_results_list->addItem(result[i]);
+        }
+    }
+}
+
+
+void FilesAndTagsWnd::result_clicked(QListWidgetItem *p_item)
+{
+    QString full_url = "file://";
+    full_url += p_item->text();
+    QDesktopServices::openUrl(QUrl(full_url));
+}

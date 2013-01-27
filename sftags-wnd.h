@@ -24,6 +24,10 @@ protected slots:
 
   void tree_item_clicked(const QModelIndex &idx);
 
+  void search();
+
+  void result_clicked(QListWidgetItem *p_item);
+
 private:
 
   void setup_slots();

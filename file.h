@@ -27,6 +27,8 @@ public:
 
     void add_tag(const QString&);
 
+    bool has_tag(const QString&) const;
+
     void add_file_to_xml_dom(QDomDocument &doc) const;
 
 private:
@@ -44,6 +46,11 @@ bool get_file_for_path(const QString &path, File &file);
 void add_file(const File &file);
 void erase_file(const File &file);
 QString get_xml_dump();
+
+/**
+ * @brief Return a vector containing files that meet p_predicate.
+ **/
+std::vector<QString> filter_files(bool (*p_predicate)(const File&, void*), void *p_data);
 
 const std::set<QString> &get_all_used_tags();
 void add_used_tag(const QString&);

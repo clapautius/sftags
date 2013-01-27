@@ -145,7 +145,7 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
-                <widget class="QRadioButton" name="radioButton">
+                <widget class="QRadioButton" name="mp_any_button">
                  <property name="text">
                   <string>Any selected tag</string>
                  </property>
@@ -155,7 +155,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QRadioButton" name="radioButton_2">
+                <widget class="QRadioButton" name="mp_all_button">
                  <property name="text">
                   <string>All selected tags</string>
                  </property>
