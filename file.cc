@@ -1,4 +1,3 @@
-#include <iostream>
 #include <vector>
 
 #include <QtXml>
@@ -6,12 +5,6 @@
 #include "file.h"
 #include "main.h"
 #include "sftags-wnd.h"
-
-#ifdef SFTAGS_DEBUG
-  #include <iostream>
-  using std::cout;
-  using std::endl;
-#endif
 
 extern FilesAndTagsWnd *gp_main_wnd;
 
@@ -116,8 +109,8 @@ bool get_file_for_path(const QString &path, File &file)
 
 void add_file(const File &file)
 {
-    std::cout<<"New file to interesting files list, path="
-             <<Q_STR(file.path())<<std::endl;
+    qDebug()<<"New file to interesting files list, path="
+            <<Q_STR(file.path());
     g_files[file.path()] = file;
 }
 
@@ -141,12 +134,9 @@ void add_used_tag(const QString &new_tag)
         if (gp_main_wnd) {
             gp_main_wnd->add_used_tag(new_tag);
         }
+    } else {
+        qDebug()<<"Tag "<<Q_STR(new_tag)<<" already exists in the tags list";
     }
-#ifdef SFTAGS_DEBUG
-    else {
-        cout<<"Tag "<<Q_STR(new_tag)<<" already exists in the tags list"<<endl;
-    }
-#endif
 }
 
 

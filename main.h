@@ -4,9 +4,7 @@
 #include <QApplication>
 #include <QString>
 
-#define SFTAGS_VER "0.1" // :release:
-
-#define SFTAGS_DEBUG
+#define SFTAGS_VER "0.2" // :release:
 
 #define Q_STR(x) (x).toUtf8().constData()
 

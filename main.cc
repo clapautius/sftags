@@ -1,22 +1,16 @@
 #include <stdio.h>
 
-#include <iostream>
 #include <vector>
 
 #include <QtSql/QtSql>
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QtXml>
+#include <QtDebug>
 
 #include "main.h"
 #include "sftags-wnd.h"
 #include "file.h"
-
-#ifdef SFTAGS_DEBUG
-  #include <iostream>
-  using std::cout;
-  using std::endl;
-#endif
 
 using namespace Ui;
 using std::vector;
@@ -95,9 +89,7 @@ static bool create_backup(QString path)
         snprintf(suffix, 4, "%03d", i);
         QString backup_path = path + "." + suffix;
         if (!QFile::exists(backup_path)) {
-#ifdef SFTAGS_DEBUG
-            cout<<":debug: creating backup file "<<Q_STR(backup_path)<<endl;
-#endif
+            qDebug()<<":debug: creating backup file "<<Q_STR(backup_path);
             if (rename(Q_STR(path), Q_STR(backup_path)) == 0) {
                 return true;
             } else {
@@ -130,11 +122,12 @@ bool save_xml(bool first_time)
         return false;
     }
     QString xml_string = get_xml_dump();
-    if (file.write(Q_STR(xml_string)) != xml_string.size()) {
-#ifdef SFTAGS_DEBUG
-        cout<<"Error writing data to xml file"<<endl;
-        cout<<"xml_string="<<Q_STR(xml_string)<<endl;
-#endif
+    unsigned written = 0;
+    if ((written = file.write(Q_STR(xml_string))) != strlen(Q_STR(xml_string))) {
+        qDebug()<<"Error writing data to xml file";
+        qDebug()<<"xml_string="<<Q_STR(xml_string);
+        qDebug()<<"written="<<written<<", strlen(xml_string)="
+                <<strlen(Q_STR(xml_string));
         file.close();
         return false;
     }

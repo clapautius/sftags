@@ -9,17 +9,12 @@
 #include <QListWidget>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QtDebug>
 
 #include "sftags-wnd.h"
 #include "main.h"
 #include "tagsbox.h"
 #include "file.h"
-
-#ifdef SFTAGS_DEBUG
-  #include <iostream>
-  using std::cout;
-  using std::endl;
-#endif
 
 using std::set;
 using std::vector;
@@ -115,13 +110,12 @@ void FilesAndTagsWnd::change_tags()
         set<QString> new_tags = p_tags_box->get_selected_tags();
         // print tags
         set<QString>::const_iterator it;
-#ifdef SFTAGS_DEBUG
-        cout<<"File tags: ";
+        QString debug_str = "File tags: ";
         for (it = new_tags.begin(); it != new_tags.end(); it++) {
-            cout<<Q_STR(*it)<<" ";
+            debug_str += Q_STR(*it);
+            debug_str += " ";
         }
-        cout<<endl;
-#endif
+        qDebug()<<debug_str;
         
         if (new_tags.empty()) {
             erase_file(file_details);
