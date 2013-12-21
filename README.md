@@ -1,6 +1,11 @@
-sftags
-======
 
-simple file tags (Qt app)
+**Screenshot**
 
-See wiki for details.
+![screenshot](https://github.com/clapautius/sftags/blob/master/doc/sftags-scr1.png?raw=true)
+
+
+**Build:**
+
+Qt developement libraries are needed for building the app.
+
+`qmake && make`
