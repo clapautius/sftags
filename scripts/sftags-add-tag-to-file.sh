@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ver: 2018-11-11-0
+# ver: 2018-11-12-0
 
 # $1 : filename
 # $2 : tag
@@ -45,6 +45,13 @@ sftags_prerequisites()
 }
 
 
+# get all tags (from all files) as a string, separated by space
+sftags_get_all_tags()
+{
+    cat "$g_sftags_file" | cut -d "|" -f 4 | tr ';' '\n' | sort | uniq
+}
+
+
 # $1 - tag
 # $2 - file
 sftags_apply_tag_to_file()
@@ -68,7 +75,8 @@ main()
         if [ "$?" -ne 0 ]; then
             sftags_display_fatal_error "Invalid path: $1"
         fi
-        tag=$(kdialog --inputbox "tag")
+        all_tags=$(sftags_get_all_tags)
+        tag=$(kdialog --inputbox "Input tag (existing tags: $all_tags)")
         if [ "$?" -ne 0 ]; then
             sftags_display_fatal_error "Error getting tag for file $fpath"
         fi
