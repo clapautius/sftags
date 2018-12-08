@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# ver: 2018-11-12-0
+# ver: 2018-12-08-0
 
 # $1 : filename
 # $2 : tag
 
 g_debug=0
 #g_debug=1 # :debug:
+g_dry_run=0
 
 g_sftags_file="$HOME/.sftags2"
 
@@ -52,6 +53,17 @@ sftags_get_all_tags()
 }
 
 
+# get all tags for the specified file, as a string, separated by space
+# $1 - sha256sum
+# $2 - length
+sftags_get_tags_for_file()
+{
+    [ -z "$1" ] && exit 5
+    [ -z "$2" ] && exit 5
+    cat "$g_sftags_file" | grep "^f|$1|$2|" | cut -d "|" -f 4 | tr ';' '\n' | sort | uniq
+}
+
+
 # $1 - tag
 # $2 - file
 sftags_apply_tag_to_file()
@@ -76,12 +88,16 @@ main()
             sftags_display_fatal_error "Invalid path: $1"
         fi
         all_tags=$(sftags_get_all_tags)
-        tag=$(kdialog --inputbox "Input tag (existing tags: $all_tags)")
+        local sum=$(file_get_sha256sum "$fpath")
+        local len=$(file_get_length "$fpath")
+        all_tags_file=$(sftags_get_tags_for_file "$sum" "$len")
+        ${all_tags_file:="-"}
+        tag=$(kdialog --inputbox "Input tag   (Existing tags: $all_tags;   Tags for file: $all_tags_file)")
         if [ "$?" -ne 0 ]; then
-            sftags_display_fatal_error "Error getting tag for file $fpath"
+            sftags_display_fatal_error "No tag provided for file $fpath"
         fi
         ((g_debug)) && echo "applying tag $tag to file $fpath"
-        sftags_apply_tag_to_file "$tag" "$fpath" || sftags_display_fatal_error "Error applying tag $tag to file $fpath"
+        ((!g_dry_run)) && sftags_apply_tag_to_file "$tag" "$fpath" || sftags_display_fatal_error "Error applying tag $tag to file $fpath"
     else
         sftags_display_fatal_error "Missing prerequisites"
     fi
