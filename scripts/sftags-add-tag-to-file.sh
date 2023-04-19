@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ver: 2018-12-08-0
+# ver: 2023-03-26-0
 
 # $1 : filename
 # $2 : tag
@@ -91,7 +91,7 @@ main()
         local sum=$(file_get_sha256sum "$fpath")
         local len=$(file_get_length "$fpath")
         all_tags_file=$(sftags_get_tags_for_file "$sum" "$len")
-        ${all_tags_file:="-"}
+        : ${all_tags_file:="-"}
         tag=$(kdialog --inputbox "Input tag   (Existing tags: $all_tags;   Tags for file: $all_tags_file)")
         if [ "$?" -ne 0 ]; then
             sftags_display_fatal_error "No tag provided for file $fpath"
